@@ -1,0 +1,60 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{8E294E02-A9D3-495D-A520-1F0F58ECAA19}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="ReduxD\ReduxDelphi.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Demo\CounterDemo\CounterDemo.dproj">
+            <Dependencies>ReduxD\ReduxDelphi.dproj</Dependencies>
+        </Projects>
+        <Projects Include="Demo\TextDemo\TextDemo.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="ReduxDelphi">
+        <MSBuild Projects="ReduxD\ReduxDelphi.dproj"/>
+    </Target>
+    <Target Name="ReduxDelphi:Clean">
+        <MSBuild Projects="ReduxD\ReduxDelphi.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ReduxDelphi:Make">
+        <MSBuild Projects="ReduxD\ReduxDelphi.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="CounterDemo" DependsOnTargets="ReduxDelphi">
+        <MSBuild Projects="Demo\CounterDemo\CounterDemo.dproj"/>
+    </Target>
+    <Target Name="CounterDemo:Clean" DependsOnTargets="ReduxDelphi:Clean">
+        <MSBuild Projects="Demo\CounterDemo\CounterDemo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="CounterDemo:Make" DependsOnTargets="ReduxDelphi:Make">
+        <MSBuild Projects="Demo\CounterDemo\CounterDemo.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="TextDemo">
+        <MSBuild Projects="Demo\TextDemo\TextDemo.dproj"/>
+    </Target>
+    <Target Name="TextDemo:Clean">
+        <MSBuild Projects="Demo\TextDemo\TextDemo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TextDemo:Make">
+        <MSBuild Projects="Demo\TextDemo\TextDemo.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="ReduxDelphi;CounterDemo;TextDemo"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="ReduxDelphi:Clean;CounterDemo:Clean;TextDemo:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="ReduxDelphi:Make;CounterDemo:Make;TextDemo:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
