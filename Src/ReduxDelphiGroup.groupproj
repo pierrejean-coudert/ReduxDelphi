@@ -3,13 +3,16 @@
         <ProjectGuid>{8E294E02-A9D3-495D-A520-1F0F58ECAA19}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
-        <Projects Include="ReduxD\ReduxDelphi.dproj">
+        <Projects Include="Redux\ReduxDelphi.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="Demo\CounterDemo\CounterDemo.dproj">
-            <Dependencies>ReduxD\ReduxDelphi.dproj</Dependencies>
+            <Dependencies>Redux\ReduxDelphi.dproj</Dependencies>
         </Projects>
         <Projects Include="Demo\TextDemo\TextDemo.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Demo\TodoMVC\TodoMVC.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -21,13 +24,13 @@
         </BorlandProject>
     </ProjectExtensions>
     <Target Name="ReduxDelphi">
-        <MSBuild Projects="ReduxD\ReduxDelphi.dproj"/>
+        <MSBuild Projects="Redux\ReduxDelphi.dproj"/>
     </Target>
     <Target Name="ReduxDelphi:Clean">
-        <MSBuild Projects="ReduxD\ReduxDelphi.dproj" Targets="Clean"/>
+        <MSBuild Projects="Redux\ReduxDelphi.dproj" Targets="Clean"/>
     </Target>
     <Target Name="ReduxDelphi:Make">
-        <MSBuild Projects="ReduxD\ReduxDelphi.dproj" Targets="Make"/>
+        <MSBuild Projects="Redux\ReduxDelphi.dproj" Targets="Make"/>
     </Target>
     <Target Name="CounterDemo" DependsOnTargets="ReduxDelphi">
         <MSBuild Projects="Demo\CounterDemo\CounterDemo.dproj"/>
@@ -47,14 +50,23 @@
     <Target Name="TextDemo:Make">
         <MSBuild Projects="Demo\TextDemo\TextDemo.dproj" Targets="Make"/>
     </Target>
+    <Target Name="TodoMVC">
+        <MSBuild Projects="Demo\TodoMVC\TodoMVC.dproj"/>
+    </Target>
+    <Target Name="TodoMVC:Clean">
+        <MSBuild Projects="Demo\TodoMVC\TodoMVC.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TodoMVC:Make">
+        <MSBuild Projects="Demo\TodoMVC\TodoMVC.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="ReduxDelphi;CounterDemo;TextDemo"/>
+        <CallTarget Targets="ReduxDelphi;CounterDemo;TextDemo;TodoMVC"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="ReduxDelphi:Clean;CounterDemo:Clean;TextDemo:Clean"/>
+        <CallTarget Targets="ReduxDelphi:Clean;CounterDemo:Clean;TextDemo:Clean;TodoMVC:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="ReduxDelphi:Make;CounterDemo:Make;TextDemo:Make"/>
+        <CallTarget Targets="ReduxDelphi:Make;CounterDemo:Make;TextDemo:Make;TodoMVC:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
