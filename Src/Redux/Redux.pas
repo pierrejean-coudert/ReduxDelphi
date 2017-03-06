@@ -13,45 +13,45 @@ type
 
   TSubscriber<TState> = reference to procedure (State: TState);
 
-  TReducer<TState, TAction> = reference to function (State: TState; Action: TAction): TState;
+  TReducer<TState, TRdxAction> = reference to function (State: TState; Action: TRdxAction): TState;
 
-  TDispatcher<TAction> = reference to function(Action: TAction): TAction;
-  TMiddleware<TAction> = reference to function(Dispatcher: TDispatcher<TAction>) : TDispatcher<TAction>;
+  TDispatcher<TRdxAction> = reference to function(Action: TRdxAction): TRdxAction;
+  TMiddleware<TRdxAction> = reference to function(Dispatcher: TDispatcher<TRdxAction>) : TDispatcher<TRdxAction>;
 
-  IStore<TState, TAction> = interface
+  IStore<TState, TRdxAction> = interface
     procedure Subscribe(Subscriber : TSubscriber<TState>);
-    procedure Dispatch(Action: TAction);
-    procedure AddMiddleware(Middleware : TMiddleware<TAction>);
+    procedure Dispatch(Action: TRdxAction);
+    procedure AddMiddleware(Middleware : TMiddleware<TRdxAction>);
     function  GetState(): TState;
   end;
 
-  TStore<TState, TAction> = class(TInterfacedObject,IStore<TState, TAction>)
+  TStore<TState, TRdxAction> = class(TInterfacedObject,IStore<TState, TRdxAction>)
   private
     FState : TState;
-    FReducer : TReducer<TState, TAction>;
+    FReducer : TReducer<TState, TRdxAction>;
     FSubscriber : TList<TSubscriber<TState>>;
-    FMiddlewares : TList<TMiddleware<TAction>>;
+    FMiddlewares : TList<TMiddleware<TRdxAction>>;
 
-    function innerDispatch(Action: TAction): TAction;
-    function applyMiddleware(): TDispatcher<TAction>;
+    function innerDispatch(Action: TRdxAction): TRdxAction;
+    function applyMiddleware(): TDispatcher<TRdxAction>;
 
   public
-    constructor Create(Reducer: TReducer<TState, TAction>; State:TState);
+    constructor Create(Reducer: TReducer<TState, TRdxAction>; State:TState);
 
     procedure Subscribe(Subscriber : TSubscriber<TState>);
-    procedure Dispatch(Action: TAction);
-    procedure AddMiddleware(Middleware : TMiddleware<TAction>);
+    procedure Dispatch(Action: TRdxAction);
+    procedure AddMiddleware(Middleware : TMiddleware<TRdxAction>);
     function  GetState(): TState;
   end;
 
 implementation
 
-{ TStore<TState, TAction> }
+{ TStore<TState, TRdxAction> }
 
-function TStore<TState, TAction>.applyMiddleware: TDispatcher<TAction>;
+function TStore<TState, TRdxAction>.applyMiddleware: TDispatcher<TRdxAction>;
 var
-  dispatcher : TDispatcher<TAction>;
-  middleware : TMiddleware<TAction>;
+  dispatcher : TDispatcher<TRdxAction>;
+  middleware : TMiddleware<TRdxAction>;
 begin
   dispatcher := innerDispatch;
  	for middleware in FMiddlewares do
@@ -59,7 +59,7 @@ begin
   result := dispatcher;
 end;
 
-function TStore<TState, TAction>.innerDispatch(Action: TAction): TAction;
+function TStore<TState, TRdxAction>.innerDispatch(Action: TRdxAction): TRdxAction;
 var
   Subscriber : TSubscriber<TState>;
 begin
@@ -68,31 +68,31 @@ begin
 		Subscriber(FState);
 end;
 
-constructor TStore<TState, TAction>.Create(Reducer: TReducer<TState, TAction>;
+constructor TStore<TState, TRdxAction>.Create(Reducer: TReducer<TState, TRdxAction>;
                                            State: TState);
 begin
   FState := State;
   FReducer := Reducer;
   FSubscriber := TList<TSubscriber<TState>>.Create();
-  FMiddlewares := TList<TMiddleware<TAction>>.Create();
+  FMiddlewares := TList<TMiddleware<TRdxAction>>.Create();
 end;
 
-procedure TStore<TState, TAction>.AddMiddleware(Middleware: TMiddleware<TAction>);
+procedure TStore<TState, TRdxAction>.AddMiddleware(Middleware: TMiddleware<TRdxAction>);
 begin
   FMiddlewares.Add(Middleware);
 end;
 
-procedure TStore<TState, TAction>.Dispatch(Action: TAction);
+procedure TStore<TState, TRdxAction>.Dispatch(Action: TRdxAction);
 begin
   applyMiddleware()(Action);
 end;
 
-function TStore<TState, TAction>.GetState: TState;
+function TStore<TState, TRdxAction>.GetState: TState;
 begin
   Result := FState;
 end;
 
-procedure TStore<TState, TAction>.Subscribe(Subscriber : TSubscriber<TState>);
+procedure TStore<TState, TRdxAction>.Subscribe(Subscriber : TSubscriber<TState>);
 begin
   FSubscriber.Add(Subscriber);
 end;
