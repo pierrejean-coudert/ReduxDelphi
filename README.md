@@ -1,0 +1,83 @@
+# ReduxDelphi
+
+ReduxDelphi is a predictable state container for Delphi apps. Inspired by https://github.com/reactjs/redux . 
+
+This project is currently developped with Delphi 10.1
+
+## Counter sample code
+
+```Pascal
+unit DemoCounterForm;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
+  Redux;
+
+type
+  TAction= (INIT, INCREMENT, DECREMENT);
+
+  TFormDemoCounter = class(TForm)
+    ButtonInc: TButton;
+    ButtonDec: TButton;
+    LabelCounter: TLabel;
+
+    procedure ButtonIncClick(Sender: TObject);
+    procedure ButtonDecClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+
+  private
+    FStore : TStore<Integer, TAction>;
+  end;
+
+var
+  FormDemoCounter: TFormDemoCounter;
+
+implementation
+
+{$R *.dfm}
+
+procedure TFormDemoCounter.ButtonIncClick(Sender: TObject);
+begin
+  FStore.dispatch(INCREMENT);
+end;
+
+procedure TFormDemoCounter.ButtonDecClick(Sender: TObject);
+begin
+  FStore.dispatch(DECREMENT);
+end;
+
+procedure TFormDemoCounter.FormShow(Sender: TObject);
+var
+  FReducer : TReducer<Integer,TAction>;
+begin
+  FReducer :=
+    function(State: Integer; Action: TAction): Integer
+    begin
+      case Action of
+        INCREMENT:
+          Result := State + 1;
+
+        DECREMENT:
+          Result := State - 1;
+
+        else
+          Result := State;
+      end;
+    end;
+
+  FStore := TStore<Integer, TAction>.Create(FReducer, 0);
+
+  FStore.subscribe( procedure (State: Integer)
+    begin
+      LabelCounter.Caption := IntToStr(State);
+    end
+  );
+
+  FStore.dispatch(INIT);
+end;
+
+end.
+```
