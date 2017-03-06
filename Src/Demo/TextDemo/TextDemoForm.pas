@@ -38,8 +38,8 @@ implementation
 {$R *.dfm}
 
 const
-  InitState : TState = (MyText1:'1';
-                        MyText2:'2');
+  InitState : TState = (MyText1:'';
+                        MyText2:'');
 
 { TForm1 }
 
@@ -71,8 +71,8 @@ begin
 
 	FStore.subscribe( procedure (State: TState)
     begin
-      Label1.Caption := State.MyText1;
-      LabelSaved.Caption := State.MyText2;
+      Label1.Caption := 'Typed: ' + State.MyText1;
+      LabelSaved.Caption := 'Saved: '+ State.MyText2;
     end
   );
 

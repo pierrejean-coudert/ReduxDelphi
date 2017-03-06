@@ -3,7 +3,7 @@ object FormDemoCounter: TFormDemoCounter
   Top = 0
   Caption = 'DemoCounter'
   ClientHeight = 120
-  ClientWidth = 427
+  ClientWidth = 143
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,16 +14,16 @@ object FormDemoCounter: TFormDemoCounter
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object Label1: TLabel
-    Left = 136
-    Top = 32
-    Width = 31
+  object LabelCounter: TLabel
+    Left = 64
+    Top = 53
+    Width = 12
     Height = 13
-    Caption = 'Label1'
+    Caption = '...'
   end
   object ButtonInc: TButton
-    Left = 16
-    Top = 8
+    Left = 40
+    Top = 16
     Width = 75
     Height = 25
     Caption = 'Inc'
@@ -31,19 +31,12 @@ object FormDemoCounter: TFormDemoCounter
     OnClick = ButtonIncClick
   end
   object ButtonDec: TButton
-    Left = 16
-    Top = 56
+    Left = 40
+    Top = 80
     Width = 75
     Height = 25
     Caption = 'Dec'
     TabOrder = 1
     OnClick = ButtonDecClick
-  end
-  object Memo1: TMemo
-    Left = 200
-    Top = 8
-    Width = 185
-    Height = 89
-    TabOrder = 2
   end
 end

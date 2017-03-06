@@ -7,20 +7,21 @@ uses
   TodoStates;
 
 type
+  TAddTodoAction = class(TActionSetText);
 
-    TAddTodoAction = class(TActionSetText);
+  TDeleteTodoAction = class(TActionSetGUID);
 
-    TDeleteTodoAction = class(TActionSetGUID);
-    TCompleteTodoAction = class(TActionSetGUID);
+  TCompleteTodoAction = class(TActionSetGUID);
 
-    TCompleteAllTodosAction = class(TActionSetBool);
+  TCompleteAllTodosAction = class(TActionSetBool);
 
-    TClearCompletedTodosAction = class(TActionInit);
+  TClearCompletedTodosAction = class(TActionInit);
 
-    TFilterTodosAction= class abstract(TInterfacedObject, IAction)
-      Filter : TTodosFilter;
-      constructor Create(AFilter: TTodosFilter);
-    end;
+  TFilterTodosAction= class abstract(TInterfacedObject, IAction)
+    Filter : TTodosFilter;
+
+    constructor Create(AFilter: TTodosFilter);
+  end;
 
 implementation
 

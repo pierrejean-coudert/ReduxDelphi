@@ -13,8 +13,7 @@ type
   TFormDemoCounter = class(TForm)
     ButtonInc: TButton;
     ButtonDec: TButton;
-    Label1: TLabel;
-    Memo1: TMemo;
+    LabelCounter: TLabel;
 
     procedure ButtonIncClick(Sender: TObject);
     procedure ButtonDecClick(Sender: TObject);
@@ -64,13 +63,7 @@ begin
 
 	FStore.subscribe( procedure (State: Integer)
     begin
-      Label1.Caption := IntToStr(State);
-    end
-  );
-
-	FStore.subscribe( procedure (State: Integer)
-    begin
-      Memo1.Lines.Add(IntToStr(State));
+      LabelCounter.Caption := IntToStr(State);
     end
   );
 

@@ -48,7 +48,7 @@ end;
 constructor TApplicationState.Create(ATodos: TList<TTodo>;
   AFilter: TTodosFilter);
 var
-  ATodo, newTodo: TTodo;
+  ATodo: TTodo;
 begin
   Todos := TList<TTodo>.Create;
   for ATodo in ATodos do begin

@@ -86,8 +86,6 @@ implementation
 
 
   function TodosReducer(State: TList<TTodo>; Action: IAction): TList<TTodo>;
-  var
-    Todo : TTodo;
   begin
     if (action is TAddTodoAction) then
         Result := AddTodoReducer(State, TAddTodoAction(Action))

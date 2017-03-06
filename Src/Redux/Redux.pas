@@ -9,8 +9,7 @@ uses
 type
 
 //TODo : add tests
-//TODO : add TODOList sample
-//TODO : add async sample
+//TODO : add multi-thread, async samples
 
   TSubscriber<TState> = reference to procedure (State: TState);
 
