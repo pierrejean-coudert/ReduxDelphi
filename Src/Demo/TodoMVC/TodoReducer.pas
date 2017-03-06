@@ -14,53 +14,74 @@ implementation
 
   function AddTodoReducer( State: TList<TTodo>; Action: TAddTodoAction ): TList<TTodo>;
   var
-    AGUID : TGUID;
     ATodo : TTodo;
+    NewState :  TList<TTodo>;
   begin
     CreateGUID(ATodo.Id);
     ATodo.Text := Action.Text;
     ATodo.IsCompleted := False;
-    // TODO: should copy State before (immutability)
-    State.Insert(0, ATodo);
-    Result := State;
+    NewState := TList<TTodo>.Create(State);
+    NewState.Insert(0, ATodo);
+    Result := NewState;
   end;
 
   function ClearCompletedTodosReducer( State: TList<TTodo>; Action: TClearCompletedTodosAction ): TList<TTodo>;
+  var
+    Todo : TTodo;
+    NewState :  TList<TTodo>;
   begin
-    //Result := State.RemoveAll(todo => todo.IsCompleted);
+    NewState := TList<TTodo>.Create();
+    for Todo in State do begin
+      if not Todo.IsCompleted then
+        NewState.Add(Todo)
+    end;
+    Result := NewState;
   end;
 
   function CompleteAllTodosReducer( State: TList<TTodo>; Action: TCompleteAllTodosAction ): TList<TTodo>;
+  var
+    Todo : TTodo;
+    NewState :  TList<TTodo>;
   begin
-//    Result := State
-//          .Select(x => new Todo
-//          {
-//              Id = x.Id,
-//              Text = x.Text,
-//              IsCompleted = action.IsCompleted
-//          })
-//          .ToImmutableArray();
+    NewState := TList<TTodo>.Create();
+    for Todo in State do begin
+      //Todo.IsCompleted := Action.Value;
+      NewState.Add(Todo)
+    end;
+    Result := NewState;
   end;
+
 
   function CompleteTodoReducer( State: TList<TTodo>; Action: TCompleteTodoAction ): TList<TTodo>;
+  var
+    Todo : TTodo;
+    newTodo  : TTodo;
+    NewState :  TList<TTodo>;
   begin
-//      var todoToEdit = State.First(todo => todo.Id == action.TodoId);
-//
-//      Result := State
-//          .Replace(todoToEdit, new Todo
-//          {
-//              Id = todoToEdit.Id,
-//              Text = todoToEdit.Text,
-//              IsCompleted = !todoToEdit.IsCompleted
-//          });
+    NewState := TList<TTodo>.Create();
+    for Todo in State do begin
+      if Todo.Id = Action.GUID then
+        NewTodo := Todo;
+        NewTodo.IsCompleted := not Todo.IsCompleted;
+      NewState.Add(NewTodo)
+    end;
+    Result := NewState;
   end;
 
+
   function DeleteTodoReducer( State: TList<TTodo>; Action:  TDeleteTodoAction ): TList<TTodo>;
+  var
+    Todo : TTodo;
+    NewState :  TList<TTodo>;
   begin
-//      var todoToDelete = previousState.First(todo => todo.Id == action.TodoId);
-//
-//      return previousState.Remove(todoToDelete);
+    NewState := TList<TTodo>.Create();
+    for Todo in State do begin
+      if Todo.Id <> Action.GUID then
+        NewState.Add(Todo)
+    end;
+    Result := NewState;
   end;
+
 
   function TodosReducer(State: TList<TTodo>; Action: IAction): TList<TTodo>;
   begin
