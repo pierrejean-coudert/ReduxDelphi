@@ -17,7 +17,7 @@ uses
   Redux;
 
 type
-  TAction= (INIT, INCREMENT, DECREMENT);
+  TEnumAction= (INIT, INCREMENT, DECREMENT);
 
   TFormDemoCounter = class(TForm)
     ButtonInc: TButton;
@@ -29,7 +29,7 @@ type
     procedure FormShow(Sender: TObject);
 
   private
-    FStore : TStore<Integer, TAction>;
+    FStore : TStore<Integer, TEnumAction>;
   end;
 
 var
@@ -51,10 +51,10 @@ end;
 
 procedure TFormDemoCounter.FormShow(Sender: TObject);
 var
-  FReducer : TReducer<Integer,TAction>;
+  FReducer : TReducer<Integer,TEnumAction>;
 begin
   FReducer :=
-    function(State: Integer; Action: TAction): Integer
+    function(State: Integer; Action: TEnumAction): Integer
     begin
       case Action of
         INCREMENT:
@@ -68,7 +68,7 @@ begin
       end;
     end;
 
-  FStore := TStore<Integer, TAction>.Create(FReducer, 0);
+  FStore := TStore<Integer, TEnumAction>.Create(FReducer, 0);
 
   FStore.subscribe( procedure (State: Integer)
     begin
