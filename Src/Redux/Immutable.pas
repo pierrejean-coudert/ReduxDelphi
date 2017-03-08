@@ -6,92 +6,108 @@ uses
    System.Generics.Collections;
 
 type
-  TFilter<TItem> = reference to function(AItem: TItem): Boolean;
-  TMapper<TItem> = reference to function(AItem: TItem): TItem;
+  TFilter<T> = reference to function(AItem: T): Boolean;
+  TMapper<T> = reference to function(AItem: T): T;
 
-  IImmutableList<TItem> = interface
-    function Insert(Index: Integer; AItem: TItem): IImmutableList<TItem> ;
-    function Filter(AFilter: TFilter<TItem>): IImmutableList<TItem> ;
-    function Map(AMapper: TMapper<TItem>): IImmutableList<TItem> ;
+  IImmutableList<T> = interface
+    function Insert(Index: Integer; AItem: T): IImmutableList<T> ;
+    function Filter(AFilter: TFilter<T>): IImmutableList<T> ;
+    function Map(AMapper: TMapper<T>): IImmutableList<T> ;
 
-    function GetEnumerator: TEnumerator<TItem>;
+    function Count: Integer;
+    function Items(Index: Integer): T;
+
+    function GetEnumerator: TEnumerator<T>;
   end;
 
 
-  TImmutableList<TItem> = class(TInterfacedObject, IImmutableList<TItem>)
+  TImmutableList<T> = class(TInterfacedObject, IImmutableList<T>)
   private
-    FList: TList<TItem>;
+    FList: TList<T>;
   public
     constructor Create(); overload;
-    constructor Create(AImmutableList: IImmutableList<TItem>); overload;
+    constructor Create(AImmutableList: IImmutableList<T>); overload;
     destructor  Destroy; override;
 
-    function Insert(Index: Integer; AItem: TItem): IImmutableList<TItem>;
-    function Filter(AFilter: TFilter<TItem>): IImmutableList<TItem>;
-    function Map(AMapper: TMapper<TItem>): IImmutableList<TItem>;
+    function Insert(Index: Integer; AItem: T): IImmutableList<T>;
+    function Filter(AFilter: TFilter<T>): IImmutableList<T>;
+    function Map(AMapper: TMapper<T>): IImmutableList<T>;
 
-    function GetEnumerator: TEnumerator<TItem>;
+    function Count: Integer;
+    function Items(Index: Integer): T;
+
+    function GetEnumerator: TEnumerator<T>;
   end;
 
 implementation
 
-{ TImmutableList<TItem> }
+{ TImmutableList<T> }
 
-constructor TImmutableList<TItem>.Create;
+constructor TImmutableList<T>.Create;
 begin
-  FList := TList<TItem>.Create;
+  FList := TList<T>.Create;
 end;
 
-constructor TImmutableList<TItem>.Create(AImmutableList: IImmutableList<TItem>);
-var
-  AItem : TItem;
+function TImmutableList<T>.Count: Integer;
 begin
-  FList := TList<TItem>.Create;
+  Result := FList.Count;
+end;
+
+constructor TImmutableList<T>.Create(AImmutableList: IImmutableList<T>);
+var
+  AItem : T;
+begin
+  FList := TList<T>.Create;
   for AItem in AImmutableList do
     FList.Add(AItem);
 end;
 
-destructor TImmutableList<TItem>.Destroy;
+destructor TImmutableList<T>.Destroy;
 begin
   FList.Free;
   inherited;
 end;
 
-function TImmutableList<TItem>.GetEnumerator: TEnumerator<TItem>;
+function TImmutableList<T>.GetEnumerator: TEnumerator<T>;
 begin
   Result := FList.GetEnumerator;
 end;
 
-function TImmutableList<TItem>.Insert(Index: Integer; AItem: TItem): IImmutableList<TItem>;
+function TImmutableList<T>.Insert(Index: Integer; AItem: T): IImmutableList<T>;
 var
-  NewList :  TImmutableList<TItem>;
+  NewList :  TImmutableList<T>;
 begin
-  NewList := TImmutableList<TItem>.Create(Self);
-  TImmutableList<TItem>(NewList).FList.Insert(Index, AItem);
+  NewList := TImmutableList<T>.Create(Self);
+  TImmutableList<T>(NewList).FList.Insert(Index, AItem);
   Result := NewList;
 end;
 
-function TImmutableList<TItem>.Filter(AFilter: TFilter<TItem>): IImmutableList<TItem>;
-var
-  AItem : TItem;
-  NewList : TImmutableList<TItem>;
+function TImmutableList<T>.Items(Index: Integer): T;
 begin
-  NewList := TImmutableList<TItem>.Create();
+  Result := FList.Items[Index];
+end;
+
+function TImmutableList<T>.Filter(AFilter: TFilter<T>): IImmutableList<T>;
+var
+  AItem : T;
+  NewList : TImmutableList<T>;
+begin
+  NewList := TImmutableList<T>.Create();
   for AItem in FList do begin
     if AFilter(AItem) then
-      TImmutableList<TItem>(NewList).FList.Add(AItem)
+      TImmutableList<T>(NewList).FList.Add(AItem)
   end;
   Result := NewList;
 end;
 
-function TImmutableList<TItem>.Map(AMapper: TMapper<TItem>): IImmutableList<TItem>;
+function TImmutableList<T>.Map(AMapper: TMapper<T>): IImmutableList<T>;
 var
-  AItem : TItem;
-  NewList : TImmutableList<TItem>;
+  AItem : T;
+  NewList : TImmutableList<T>;
 begin
-  NewList := TImmutableList<TItem>.Create();
+  NewList := TImmutableList<T>.Create();
   for AItem in FList do begin
-      TImmutableList<TItem>(NewList).FList.Add( AMapper(AItem))
+      TImmutableList<T>(NewList).FList.Add( AMapper(AItem))
   end;
   Result := NewList;
 end;
