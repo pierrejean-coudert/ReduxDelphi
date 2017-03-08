@@ -12,25 +12,25 @@ uses
 
 implementation
 
-  function AddTodoReducer( State: TList<ITodo>; Action: TAddTodoAction ): TList<ITodo>;
+  function AddTodoReducer( State: ITodoList; Action: TAddTodoAction ): ITodoList;
   var
     AGUID : TGUID;
-    ATodo : TTodo;
-    NewState :  TList<ITodo>;
+    ATodo : ITodo;
+    NewState :  ITodoList;
   begin
     CreateGUID(AGUID);
     ATodo := TTodo.Create(Action.Text, False, AGUID);
-    NewState := TList<ITodo>.Create(State);
+    NewState := TTodoList.Create(State);
     NewState.Insert(0, ATodo);
     Result := NewState;
   end;
 
-  function ClearCompletedTodosReducer( State: TList<ITodo>; Action: TClearCompletedTodosAction ): TList<ITodo>;
+  function ClearCompletedTodosReducer( State: ITodoList; Action: TClearCompletedTodosAction ): ITodoList;
   var
     Todo : ITodo;
-    NewState :  TList<ITodo>;
+    NewState :  ITodoList;
   begin
-    NewState := TList<ITodo>.Create();
+    NewState := TTodoList.Create();
     for Todo in State do begin
       if not Todo.IsCompleted then
         NewState.Add(Todo)
@@ -38,12 +38,12 @@ implementation
     Result := NewState;
   end;
 
-  function CompleteAllTodosReducer( State: TList<ITodo>; Action: TCompleteAllTodosAction ): TList<ITodo>;
+  function CompleteAllTodosReducer( State: ITodoList; Action: TCompleteAllTodosAction ): ITodoList;
   var
     Todo, newTodo : ITodo;
-    NewState :  TList<ITodo>;
+    NewState : ITodoList;
   begin
-    NewState := TList<ITodo>.Create();
+    NewState := TTodoList.Create();
     for Todo in State do begin
       NewTodo := TTodo.Create(Todo.Text, Action.Value, Todo.Id);
       NewState.Add(NewTodo)
@@ -52,12 +52,12 @@ implementation
   end;
 
 
-  function CompleteTodoReducer( State: TList<ITodo>; Action: TCompleteTodoAction ): TList<ITodo>;
+  function CompleteTodoReducer( State: ITodoList; Action: TCompleteTodoAction ): ITodoList;
   var
     Todo, newTodo : ITodo;
-    NewState :  TList<ITodo>;
+    NewState :  ITodoList;
   begin
-    NewState := TList<ITodo>.Create();
+    NewState := TTodoList.Create();
     for Todo in State do begin
       if Todo.Id = Action.GUID then begin
         NewTodo := TTodo.Create(Todo.Text, not Todo.IsCompleted, Todo.Id);
@@ -71,12 +71,12 @@ implementation
   end;
 
 
-  function DeleteTodoReducer( State: TList<ITodo>; Action:  TDeleteTodoAction ): TList<ITodo>;
+  function DeleteTodoReducer( State: ITodoList; Action:  TDeleteTodoAction ): ITodoList;
   var
     Todo : ITodo;
-    NewState :  TList<ITodo>;
+    NewState : ITodoList;
   begin
-    NewState := TList<ITodo>.Create();
+    NewState := TTodoList.Create();
     for Todo in State do begin
       if Todo.Id <> Action.GUID then
         NewState.Add(Todo)
@@ -85,7 +85,7 @@ implementation
   end;
 
 
-  function TodosReducer(State: TList<ITodo>; Action: IAction): TList<ITodo>;
+  function TodosReducer(State: ITodoList; Action: IAction): ITodoList;
   begin
     if (action is TAddTodoAction) then
         Result := AddTodoReducer(State, TAddTodoAction(Action))

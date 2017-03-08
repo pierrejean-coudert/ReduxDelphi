@@ -14,6 +14,19 @@ type
     function Id: TGUID;
   end;
 
+  ITodoList = interface
+    function Add(ATodo: ITodo): Integer;
+    procedure Insert(Index: Integer; ATodo: ITodo);
+    function GetEnumerator: TEnumerator<ITodo>;
+  end;
+
+  IApplicationState = interface
+    function ItemLeftCount : Integer;
+    function GetTodos: ITodoList;
+    function GetFilter : TTodosFilter;
+  end;
+
+
   TTodo = class(TInterfacedObject, ITodo)
   private
     FText: string;
@@ -29,22 +42,28 @@ type
     function Id: TGUID;
   end;
 
-  IApplicationState = interface
-    function ItemLeftCount : Integer;
-    function GetTodos: TList<ITodo>;
-    function GetFilter : TTodosFilter;
+  TTodoList = class(TInterfacedObject, ITodoList)
+  private
+    FTodoList: TList<ITodo>;
+  public
+    constructor Create(); overload;
+    constructor Create(ATodoList: ITodoList); overload;
+    destructor  Destroy; override;
+
+    function Add(ATodo: ITodo): Integer;
+    procedure Insert(Index: Integer; ATodo: ITodo);
+    function GetEnumerator: TEnumerator<ITodo>;
   end;
 
   TApplicationState = class(TInterfacedObject, IApplicationState)
   private
-    FTodos: TList<ITodo>;
+    FTodos: ITodoList;
     FFilter: TTodosFilter;
   public
     constructor Create; overload;
-    constructor Create(ATodos: TList<ITodo>; AFilter: TTodosFilter); overload;
-    destructor  Destroy; override;
+    constructor Create(ATodos: ITodoList; AFilter: TTodosFilter); overload;
 
-    function GetTodos: TList<ITodo>;
+    function GetTodos: ITodoList;
     function GetFilter : TTodosFilter;
     function ItemLeftCount : Integer;
   end;
@@ -82,31 +101,61 @@ begin
   Result := FText;
 end;
 
+{ TTodoList }
+
+constructor TTodoList.Create;
+begin
+  FTodoList :=  TList<ITodo>.Create;
+end;
+
+constructor TTodoList.Create(ATodoList: ITodoList);
+var
+  Todo : ITodo;
+begin
+  FTodoList :=  TList<ITodo>.Create;
+  for Todo in ATodoList do
+    FTodoList.Add(Todo);
+end;
+
+destructor TTodoList.Destroy;
+begin
+  FTodoList.Clear;
+  FTodoList.Free;
+  inherited;
+end;
+
+function TTodoList.GetEnumerator: TEnumerator<ITodo>;
+begin
+  Result := FTodoList.GetEnumerator;
+end;
+
+function TTodoList.Add(ATodo: ITodo): Integer;
+begin
+  Result := FTodoList.Add(ATodo);
+end;
+
+procedure TTodoList.Insert(Index: Integer; ATodo: ITodo);
+begin
+  FTodoList.Insert(Index, ATodo);
+end;
+
 { TApplicationState }
 
 constructor TApplicationState.Create;
 begin
-  FTodos :=  TList<ITodo>.Create;
+  FTodos :=  TTodoList.Create;
   FFilter := All;
 end;
 
-constructor TApplicationState.Create(ATodos: TList<ITodo>;
-  AFilter: TTodosFilter);
+constructor TApplicationState.Create(ATodos: ITodoList; AFilter: TTodosFilter);
 var
   ATodo: ITodo;
 begin
-  FTodos := TList<ITodo>.Create;
+  FTodos := TTodoList.Create;
   for ATodo in ATodos do begin
     FTodos.Add(TTodo.Create(ATodo));
   end;
   FFilter := AFilter;
-end;
-
-destructor TApplicationState.Destroy;
-begin
-  FTodos.Clear;
-  FTodos.Free;
-  inherited;
 end;
 
 function TApplicationState.GetFilter: TTodosFilter;
@@ -114,7 +163,7 @@ begin
   Result := FFilter;
 end;
 
-function TApplicationState.GetTodos: TList<ITodo>;
+function TApplicationState.GetTodos: ITodoList;
 begin
   Result := FTodos;
 end;
