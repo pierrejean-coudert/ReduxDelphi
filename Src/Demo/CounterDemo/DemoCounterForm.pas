@@ -20,7 +20,7 @@ type
     procedure FormShow(Sender: TObject);
 
   private
-    FStore : TStore<Integer, TEnumAction>;
+    FStore : IStore<Integer, TEnumAction>;
   end;
 
 var

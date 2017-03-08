@@ -1,4 +1,4 @@
-object Form2: TForm2
+object FormTodo: TFormTodo
   Left = 0
   Top = 0
   Caption = 'FormTodo'
@@ -11,7 +11,8 @@ object Form2: TForm2
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  OnShow = FormShow
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
   object PanelHeaner: TPanel

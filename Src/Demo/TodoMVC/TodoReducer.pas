@@ -8,30 +8,29 @@ uses
   TodoActions,
   TodoStates;
 
-  function ApplicationReducer(State: TApplicationState; Action: IAction): TApplicationState;
+  function ApplicationReducer(State: IApplicationState; Action: IAction): IApplicationState;
 
 implementation
 
-  function AddTodoReducer( State: TList<TTodo>; Action: TAddTodoAction ): TList<TTodo>;
+  function AddTodoReducer( State: TList<ITodo>; Action: TAddTodoAction ): TList<ITodo>;
   var
+    AGUID : TGUID;
     ATodo : TTodo;
-    NewState :  TList<TTodo>;
+    NewState :  TList<ITodo>;
   begin
-    ATodo := TTodo.Create;
-    CreateGUID(ATodo.Id);
-    ATodo.Text := Action.Text;
-    ATodo.IsCompleted := False;
-    NewState := TList<TTodo>.Create(State);
+    CreateGUID(AGUID);
+    ATodo := TTodo.Create(Action.Text, False, AGUID);
+    NewState := TList<ITodo>.Create(State);
     NewState.Insert(0, ATodo);
     Result := NewState;
   end;
 
-  function ClearCompletedTodosReducer( State: TList<TTodo>; Action: TClearCompletedTodosAction ): TList<TTodo>;
+  function ClearCompletedTodosReducer( State: TList<ITodo>; Action: TClearCompletedTodosAction ): TList<ITodo>;
   var
-    Todo : TTodo;
-    NewState :  TList<TTodo>;
+    Todo : ITodo;
+    NewState :  TList<ITodo>;
   begin
-    NewState := TList<TTodo>.Create();
+    NewState := TList<ITodo>.Create();
     for Todo in State do begin
       if not Todo.IsCompleted then
         NewState.Add(Todo)
@@ -39,31 +38,32 @@ implementation
     Result := NewState;
   end;
 
-  function CompleteAllTodosReducer( State: TList<TTodo>; Action: TCompleteAllTodosAction ): TList<TTodo>;
+  function CompleteAllTodosReducer( State: TList<ITodo>; Action: TCompleteAllTodosAction ): TList<ITodo>;
   var
-    Todo, newTodo : TTodo;
-    NewState :  TList<TTodo>;
+    Todo, newTodo : ITodo;
+    NewState :  TList<ITodo>;
   begin
-    NewState := TList<TTodo>.Create();
+    NewState := TList<ITodo>.Create();
     for Todo in State do begin
-      NewTodo := TTodo.Create(Todo);
-      NewTodo.IsCompleted := Action.Value;
+      NewTodo := TTodo.Create(Todo.Text, Action.Value, Todo.Id);
       NewState.Add(NewTodo)
     end;
     Result := NewState;
   end;
 
 
-  function CompleteTodoReducer( State: TList<TTodo>; Action: TCompleteTodoAction ): TList<TTodo>;
+  function CompleteTodoReducer( State: TList<ITodo>; Action: TCompleteTodoAction ): TList<ITodo>;
   var
-    Todo, newTodo : TTodo;
-    NewState :  TList<TTodo>;
+    Todo, newTodo : ITodo;
+    NewState :  TList<ITodo>;
   begin
-    NewState := TList<TTodo>.Create();
+    NewState := TList<ITodo>.Create();
     for Todo in State do begin
-      NewTodo := TTodo.Create(Todo);
       if Todo.Id = Action.GUID then begin
-        NewTodo.IsCompleted := not Todo.IsCompleted;
+        NewTodo := TTodo.Create(Todo.Text, not Todo.IsCompleted, Todo.Id);
+      end
+      else begin
+        NewTodo := TTodo.Create(Todo);
       end;
       NewState.Add(NewTodo)
     end;
@@ -71,12 +71,12 @@ implementation
   end;
 
 
-  function DeleteTodoReducer( State: TList<TTodo>; Action:  TDeleteTodoAction ): TList<TTodo>;
+  function DeleteTodoReducer( State: TList<ITodo>; Action:  TDeleteTodoAction ): TList<ITodo>;
   var
-    Todo : TTodo;
-    NewState :  TList<TTodo>;
+    Todo : ITodo;
+    NewState :  TList<ITodo>;
   begin
-    NewState := TList<TTodo>.Create();
+    NewState := TList<ITodo>.Create();
     for Todo in State do begin
       if Todo.Id <> Action.GUID then
         NewState.Add(Todo)
@@ -85,7 +85,7 @@ implementation
   end;
 
 
-  function TodosReducer(State: TList<TTodo>; Action: IAction): TList<TTodo>;
+  function TodosReducer(State: TList<ITodo>; Action: IAction): TList<ITodo>;
   begin
     if (action is TAddTodoAction) then
         Result := AddTodoReducer(State, TAddTodoAction(Action))
@@ -113,11 +113,11 @@ implementation
       Result := State;
   end;
 
-  function ApplicationReducer(State: TApplicationState; Action: IAction): TApplicationState;
+  function ApplicationReducer(State: IApplicationState; Action: IAction): IApplicationState;
   begin
     Result := TApplicationState.Create(
-      TodosReducer(State.Todos, action),
-      FilterReducer(State.Filter, action)
+      TodosReducer(State.GetTodos, Action),
+      FilterReducer(State.GetFilter, Action)
     );
   end;
 end.

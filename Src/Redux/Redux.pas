@@ -25,7 +25,7 @@ type
     function  GetState(): TState;
   end;
 
-  TStore<TState, TRdxAction> = class(TInterfacedObject,IStore<TState, TRdxAction>)
+  TStore<TState, TRdxAction> = class(TInterfacedObject, IStore<TState, TRdxAction>)
   private
     FState : TState;
     FReducer : TReducer<TState, TRdxAction>;
@@ -37,6 +37,7 @@ type
 
   public
     constructor Create(Reducer: TReducer<TState, TRdxAction>; State:TState);
+    destructor  Destroy; override;
 
     procedure Subscribe(Subscriber : TSubscriber<TState>);
     procedure Dispatch(Action: TRdxAction);
@@ -80,6 +81,15 @@ end;
 procedure TStore<TState, TRdxAction>.AddMiddleware(Middleware: TMiddleware<TRdxAction>);
 begin
   FMiddlewares.Add(Middleware);
+end;
+
+destructor TStore<TState, TRdxAction>.Destroy;
+begin
+  FSubscriber.Clear;
+  FMiddlewares.Clear;
+  FSubscriber.Free;
+  FMiddlewares.Free;
+  inherited;
 end;
 
 procedure TStore<TState, TRdxAction>.Dispatch(Action: TRdxAction);

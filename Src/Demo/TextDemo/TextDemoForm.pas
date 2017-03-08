@@ -27,7 +27,7 @@ type
     procedure ButtonSaveClick(Sender: TObject);
 
   private
-    FStore : TStore<TState, IAction>;
+    FStore : IStore<TState, IAction>;
   end;
 
 var
