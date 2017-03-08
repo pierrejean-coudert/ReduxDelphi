@@ -31,6 +31,8 @@ type
     MenuItemDelete: TMenuItem;
 
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+
     procedure EditTodoKeyPress(Sender: TObject; var Key: Char);
     procedure CheckListBoxTodoClickCheck(Sender: TObject);
     procedure LabelFilterAllClick(Sender: TObject);
@@ -39,15 +41,11 @@ type
     procedure LabelClearCompletedClick(Sender: TObject);
     procedure CheckBoxAllClick(Sender: TObject);
     procedure MenuItemDeleteClick(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
 
   private
     initialState: IApplicationState;
     FGUIDList : TList<TGUID>;
     FStore : IStore<IApplicationState, IAction>;
-
-  public
-    { Public declarations }
   end;
 
 var
@@ -127,10 +125,10 @@ begin
       // updtae list
       CheckListBoxTodo.Items.Clear;
       FGUIDList.Clear;
-      for todo in State.GetTodos do begin
-        if (State.GetFilter= All)
-            or ((State.GetFilter= InProgress) and (not todo.IsCompleted))
-            or  ((State.GetFilter= Completed) and ( todo.IsCompleted)) then
+      for todo in State.Todos do begin
+        if (State.Filter= All)
+            or ((State.Filter= InProgress) and (not todo.IsCompleted))
+            or  ((State.Filter= Completed) and ( todo.IsCompleted)) then
         begin
           index := CheckListBoxTodo.Items.Add(todo.Text);
           FGUIDList.Add(todo.Id);
@@ -143,7 +141,7 @@ begin
       LabelFilterAll.Font.Style := [];
       LabelFilterActive.Font.Style := [];
       LabelFilterCompleted.Font.Style := [];
-      case State.GetFilter of
+      case State.Filter of
         All: LabelFilterAll.Font.Style := [fsBold];
         InProgress: LabelFilterActive.Font.Style := [fsBold];
         Completed: LabelFilterCompleted.Font.Style := [fsBold];
