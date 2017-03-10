@@ -33,6 +33,7 @@ requires
 contains
   Redux in 'Redux.pas',
   StdAction in 'StdAction.pas',
-  Immutable in 'Immutable.pas';
+  Immutable in 'Immutable.pas',
+  Logger in 'Logger.pas';
 
 end.

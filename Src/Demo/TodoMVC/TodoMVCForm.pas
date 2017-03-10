@@ -55,6 +55,9 @@ implementation
 
 {$R *.dfm}
 
+uses
+  Logger;
+
 procedure TFormTodo.CheckBoxAllClick(Sender: TObject);
 begin
   FStore.Dispatch(TCompleteAllTodosAction.Create(CheckBoxAll.Checked));
@@ -117,23 +120,29 @@ begin
 
   initialState := TApplicationState.Create();
   FStore := TStore<IApplicationState, IAction>.Create(ApplicationReducer, initialState);
+  FStore.AddMiddleware(LoggerMiddleware);
 	FStore.subscribe( procedure (State: IApplicationState)
     var
       todo: ITodo;
       index : Integer;
     begin
       // updtae list
-      CheckListBoxTodo.Items.Clear;
-      FGUIDList.Clear;
-      for todo in State.Todos do begin
-        if (State.Filter= All)
-            or ((State.Filter= InProgress) and (not todo.IsCompleted))
-            or  ((State.Filter= Completed) and ( todo.IsCompleted)) then
-        begin
-          index := CheckListBoxTodo.Items.Add(todo.Text);
-          FGUIDList.Add(todo.Id);
-          CheckListBoxTodo.Checked[index] := todo.IsCompleted;
+      CheckListBoxTodo.Items.BeginUpdate;
+      try
+        CheckListBoxTodo.Items.Clear;
+        FGUIDList.Clear;
+        for todo in State.Todos do begin
+          if (State.Filter= All)
+              or ((State.Filter= InProgress) and (not todo.IsCompleted))
+              or  ((State.Filter= Completed) and ( todo.IsCompleted)) then
+          begin
+            index := CheckListBoxTodo.Items.Add(todo.Text);
+            FGUIDList.Add(todo.Id);
+            CheckListBoxTodo.Checked[index] := todo.IsCompleted;
+          end;
         end;
+      finally
+        CheckListBoxTodo.Items.EndUpdate;
       end;
       LabelLeft.Caption := format('%d item(s) left',[State.ItemLeftCount]);
 

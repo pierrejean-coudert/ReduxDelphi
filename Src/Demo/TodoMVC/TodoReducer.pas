@@ -45,7 +45,7 @@ implementation
                   if Todo.Id = Action.GUID then
                     Result := TTodo.Create(Todo.Text, not Todo.IsCompleted, Todo.Id)
                   else
-                    Result := TTodo.Create(Todo);
+                    Result := Todo;
                 end);
   end;
 
