@@ -43,9 +43,11 @@ type
     procedure MenuItemDeleteClick(Sender: TObject);
 
   private
-    initialState: IApplicationState;
     FGUIDList : TList<TGUID>;
     FStore : IStore<IApplicationState, IAction>;
+
+    procedure UpdateGUI(State: IApplicationState);
+
   end;
 
 var
@@ -114,51 +116,54 @@ begin
     end;
 end;
 
+procedure TFormTodo.UpdateGUI(State: IApplicationState);
+var
+  todo: ITodo;
+  index : Integer;
+begin
+  // updtae list
+  CheckListBoxTodo.Items.BeginUpdate;
+  try
+    CheckListBoxTodo.Items.Clear;
+    FGUIDList.Clear;
+    for todo in State.Todos do begin
+      if (State.Filter= All)
+          or ((State.Filter= InProgress) and (not todo.IsCompleted))
+          or  ((State.Filter= Completed) and ( todo.IsCompleted)) then
+      begin
+        index := CheckListBoxTodo.Items.Add(todo.Text);
+        FGUIDList.Add(todo.Id);
+        CheckListBoxTodo.Checked[index] := todo.IsCompleted;
+      end;
+    end;
+  finally
+    CheckListBoxTodo.Items.EndUpdate;
+  end;
+  LabelLeft.Caption := format('%d item(s) left',[State.ItemLeftCount]);
+
+  // update filter
+  LabelFilterAll.Font.Style := [];
+  LabelFilterActive.Font.Style := [];
+  LabelFilterCompleted.Font.Style := [];
+  case State.Filter of
+    All: LabelFilterAll.Font.Style := [fsBold];
+    InProgress: LabelFilterActive.Font.Style := [fsBold];
+    Completed: LabelFilterCompleted.Font.Style := [fsBold];
+  end;
+
+end;
+
+
 procedure TFormTodo.FormCreate(Sender: TObject);
 begin
   FGUIDList:= TList<TGUID>.Create;
 
-  initialState := TApplicationState.Create();
-  FStore := TStore<IApplicationState, IAction>.Create(ApplicationReducer, initialState);
+  FStore := TStore<IApplicationState, IAction>.Create(ApplicationReducer, TApplicationState.Create());
   FStore.AddMiddleware(LoggerMiddleware);
 	FStore.subscribe( procedure (State: IApplicationState)
-    var
-      todo: ITodo;
-      index : Integer;
-    begin
-      // updtae list
-      CheckListBoxTodo.Items.BeginUpdate;
-      try
-        CheckListBoxTodo.Items.Clear;
-        FGUIDList.Clear;
-        for todo in State.Todos do begin
-          if (State.Filter= All)
-              or ((State.Filter= InProgress) and (not todo.IsCompleted))
-              or  ((State.Filter= Completed) and ( todo.IsCompleted)) then
-          begin
-            index := CheckListBoxTodo.Items.Add(todo.Text);
-            FGUIDList.Add(todo.Id);
-            CheckListBoxTodo.Checked[index] := todo.IsCompleted;
-          end;
-        end;
-      finally
-        CheckListBoxTodo.Items.EndUpdate;
-      end;
-      LabelLeft.Caption := format('%d item(s) left',[State.ItemLeftCount]);
-
-      // update filter
-      LabelFilterAll.Font.Style := [];
-      LabelFilterActive.Font.Style := [];
-      LabelFilterCompleted.Font.Style := [];
-      case State.Filter of
-        All: LabelFilterAll.Font.Style := [fsBold];
-        InProgress: LabelFilterActive.Font.Style := [fsBold];
-        Completed: LabelFilterCompleted.Font.Style := [fsBold];
-      end;
-
-    end
-  );
-
+                    begin
+                      UpdateGUI(State);
+                    end);
   FStore.Dispatch(TActionInit.Create());
 end;
 
