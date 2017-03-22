@@ -4,7 +4,7 @@ ReduxDelphi is a predictable state container for Delphi apps utilizing a unidire
 
 This project is currently developped with Delphi 10.1
 
-The TodoMVC sample is based on immutable data structure (Generic immutable List).
+The TodoMVC sample is based on immutable data structures (Generic immutable lists).
 
 
 ## Counter sample code
