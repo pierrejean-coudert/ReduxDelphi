@@ -1,10 +1,15 @@
 # ReduxDelphi
 
-ReduxDelphi is a predictable state container for Delphi apps. Inspired by https://github.com/reactjs/redux . 
+ReduxDelphi is a predictable state container for Delphi apps utilizing a unidirectional data flow. Inspired by https://github.com/reactjs/redux . 
 
 This project is currently developped with Delphi 10.1
 
+The TodoMVC sample is based on immutable data structure (Generic immutable List).
+
+
 ## Counter sample code
+
+Here is a simple example showing the basic usage of Store, Actions, Dispatch,...:
 
 ```Pascal
 unit DemoCounterForm;
@@ -59,23 +64,19 @@ begin
       case Action of
         INCREMENT:
           Result := State + 1;
-
         DECREMENT:
           Result := State - 1;
-
         else
           Result := State;
       end;
     end;
 
   FStore := TStore<Integer, TEnumAction>.Create(FReducer, 0);
-
   FStore.subscribe( procedure (State: Integer)
     begin
       LabelCounter.Caption := IntToStr(State);
     end
   );
-
   FStore.dispatch(INIT);
 end;
 
