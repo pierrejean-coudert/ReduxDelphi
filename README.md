@@ -2,7 +2,7 @@
 
 ReduxDelphi is a predictable state container for Delphi apps utilizing a unidirectional data flow. Inspired by https://github.com/reactjs/redux . 
 
-This project is currently developped with Delphi 10.1
+This project is currently developed with Delphi 10.1
 
 The TodoMVC sample is based on immutable data structures (Generic immutable lists).
 
